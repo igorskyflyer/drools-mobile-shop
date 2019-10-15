@@ -1,0 +1,138 @@
+package dijagnoza_kvarova
+
+import com.sample.Mobilni; 
+import org.goodoldai.jeff.wizard.JEFFWizard; 
+import org.goodoldai.jeff.explanation.ImageData;
+
+global JEFFWizard ef;
+
+rule "Mobilni se ukljucuje, ali se restartuje"
+ lock-on-active true
+  when
+   mob : Mobilni(ukljucujeSe  == "Da", restartujeSe == "Da")   
+  then
+   mob.setUzrokProblema("Softverski kvar");
+   mob.setResenje("1. Mobilni uredjaj odneti kod ovlascenog servisera");
+   update(mob);
+   ef.setTitle("Softverski kvar - bootloop");
+   ef.createExplanation();
+   ef.addText(null, "Ova greska je jedna od najcescih gresaka softverske prirode, tzv. bootloop, tj. stanje kada se mobilni telefon neprekidno restartuje je jasan indikator da postoji odredjeni problem sa softverom telefona, tacnije sa operativnim sistemom."+
+    "\nMobilni uredjaj je potrebno sto pre odneti kod ovlascenog servisera koji ce utvrditi uzrok otkazivanja softvera.");
+   ef.addImage(new ImageData(Mobilni.bootloop));
+   ef.addText(null, "Bootloop mobilnog telefona");
+end
+
+rule "Mobilni se ukljucuje i ne prepoznaje SD karticu"
+ lock-on-active true
+  when
+   mob : Mobilni(ukljucujeSe  == "Da", restartujeSe == "Ne", detektujeSDkarticu == "Ne")   
+  then
+   mob.setUzrokProblema("Ne detektuje SD karticu");
+   mob.setResenje(
+   "1. Mozete pokusati sami da otklonite kvar\n"+
+   " 1.1. Skinite zadnji poklopac telefona\n"+
+   " 1.2. Pronadjite slot za SD karticu\n"+
+   " 1.3. Izvadite SD karticu\n"+
+   " 1.4. Produvajte SD slot\n"+
+   " 1.5. Vratite SD karticu u slot i restartujte telefon\n\n ili,\n\n"+
+   "2. Mobilni uredjaj odneti kod ovlascenog servisera"
+    );
+   update(mob);
+   ef.setTitle("Kvar SD slota");
+   ef.createExplanation();
+   ef.addText(null,
+   "Ovaj takozvani kvar je moguce lako otkloniti ukoliko se radi o prasini koja sprecava pravilno funkcionisanje istog.\n"+
+   "Ukoliko ni nakon primene datog resenja telefon ne detektuje SD karticu, potrebno je uredjaj odneti kod ovlascenog servisera."
+   );
+   ef.addImage(new ImageData(Mobilni.sd));
+   ef.addText(null, "SD slot");
+end
+
+rule "Mobilni se ukljucuje, ali ne reprodukuje zvuk"
+ lock-on-active true
+  when
+   mob : Mobilni(ukljucujeSe  == "Da", reprodukujeZvuk == "Ne")   
+  then
+   mob.setUzrokProblema("Ne reprodukuje zvuk");
+   mob.setResenje(
+   "1. Proverite da li postoji fizicko ostecenje zvucnika\n"+
+   "1.1. Proverite da nije samo smanjena jacina zvuka\n"+
+   "1.2. Proverite da nije upala prasina u zvucnik\n"+
+   "2. Mobilni uredjaj odneti kod ovlascenog servisera"
+   );
+   update(mob);
+   ef.setTitle("Fizicki kvar - zvucnik");
+   ef.createExplanation();
+   ef.addText(null, "Ukoliko nakon predlozenih koraka zvucnik i dalje ne reprodukuje zvuk, telefon odnesite kod ovlascenog servisera.");
+   ef.addImage(new ImageData(Mobilni.speaker));
+   ef.addText(null, "Zvucnik");
+end
+
+rule "Mobilni se ukljucuje, ali ekran ne prikazuje sadrzaj"
+ lock-on-active true
+  when
+   mob : Mobilni(ukljucujeSe  == "Da", radiEkran == "Ne")   
+  then
+   mob.setUzrokProblema("Ekran ne prikazuje sadrzaj");
+   mob.setResenje("1. Uredjaj odneti kod ovlascenog servisera, posto je potrebno zameniti flet kabl ekrana.");
+   update(mob);
+   ef.setTitle("Fizicki kvar - ekran");
+   ef.createExplanation();
+   ef.addText(null, "Uredjaj odneti kod ovlascenog servisera, posto je potrebno zameniti flet kabl ekrana.");
+   ef.addImage(new ImageData(Mobilni.flatCable));
+   ef.addText(null, "Flet kabl");
+end
+
+rule "Mobilni se ne puni"
+ lock-on-active true
+  when
+   mob : Mobilni(puniSe == "Ne")   
+  then
+   mob.setUzrokProblema("Mobilni telefon se ne puni");
+   mob.setResenje("1. Uredjaj odneti kod ovlascenog servisera, posto je potrebno zameniti konektor za punjenje.");
+   update(mob);
+   ef.setTitle("Fizicki kvar - konektor za punjenje");
+   ef.createExplanation();
+   ef.addText(null, "Uredjaj odneti kod ovlascenog servisera, posto je potrebno zameniti konektor za punjenje.");
+   ef.addImage(new ImageData(Mobilni.charging));
+   ef.addText(null, "Konektor za punjenje");
+end
+
+rule "Ekran ne reaguje na dodir"
+ lock-on-active true
+  when
+   mob : Mobilni(ukljucujeSe == "Da", radiEkran == "Da", reagujeNaDodir == "Ne")   
+  then
+   mob.setUzrokProblema("Digitajzer");
+   mob.setResenje(
+   "1. Restartovati telefon, ili koriscenjem fizickog dugmeta ili vadjenjem baterije\n"+
+   "2. Uredjaj odneti kod ovlascenog servisera, posto je potrebno zameniti digitajzer ekrana"
+   );
+   update(mob);
+   ef.setTitle("Fizicki kvar - digitajzer");
+   ef.createExplanation();
+   ef.addText(null, "Uredjaj odneti kod ovlascenog servisera, posto je potrebno zameniti digitajzer ekrana.");
+   ef.addImage(new ImageData(Mobilni.digitizer));
+   ef.addText(null, "Digitajzer");
+end
+
+rule "Mobilni se ne ukljucuje"
+ lock-on-active true
+  when
+   mob : Mobilni(ukljucujeSe == "Ne")   
+  then
+   mob.setUzrokProblema("Prazna baterija");
+   mob.setResenje(
+   "1. Telefon povezati na punjac\n\n"+
+   "Ukoliko se telefon nije ukljucio odneti kod ovlascenog servisera."
+   );
+   update(mob);
+   ef.setTitle("Prazna baterija");
+   ef.createExplanation();
+   ef.addText(null,
+   "Najcesci uzrok ovog problema je baterija koja je skroz ispraznjena. Telefon povezati na punjac i ostaviti par minuta da se napuni.\n\n"+
+   "Ukoliko se telefon nije ukljucio odneti kod ovlascenog servisera."
+   );
+   ef.addImage(new ImageData(Mobilni.battery));
+   ef.addText(null, "Baterija");
+end
